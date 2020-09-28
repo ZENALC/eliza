@@ -1,5 +1,4 @@
 import random
-import sys
 
 
 class Eliza:
@@ -24,21 +23,27 @@ class Eliza:
         return ' '.join(newSentence.split())  # This is so we don't have unnecessary whitespace between words.
 
     def eliza_status(self):
+        """
+        Prints out Eliza's status.
+        """
         if self.mood == 0:
-            print("Eliza status: neutral.")
+            print(f"Eliza status: neutral. Happiness score: {self.mood}")
         elif self.mood > 0:
             if self.mood >= 10:
-                print("Eliza status: very happy.")
+                print(f"Eliza status: very happy. Happiness score: {self.mood}")
             else:
-                print("Eliza status: happy.")
+                print(f"Eliza status: happy. Happiness score: {self.mood}")
         else:
-            if self.mood <= self.minMood + 5:
-                sys.stderr.write("WARNING: CONTINUING TO ANGER ELIZA WILL AUTOMATICALLY CLOSE THERAPY SESSION\n")
-                print("Eliza status: extremely unhappy.")
+            if self.mood - 1 == self.minMood:
+                print("Warning: Eliza is very unstable. One or more negative words will end the therapy session.")
+                print(f"Eliza status: very unstable. Happiness score: {self.mood}")
+            elif self.mood <= self.minMood + 5:
+                print("WARNING: Eliza is getting unstable. Consider using nicer words.")
+                print(f"Eliza status: extremely unhappy. Happiness score: {self.mood}")
             elif self.mood <= -10:
-                print("Eliza status: very unhappy.")
+                print(f"Eliza status: very unhappy. Happiness score: {self.mood}")
             else:
-                print("Eliza status: unhappy.")
+                print(f"Eliza status: unhappy. Happiness score: {self.mood}")
 
     def keyword(self, sentence):
         """
@@ -73,7 +78,7 @@ class Eliza:
 
         keywords = ["can you", "can i", "you are", "youre", "i dont", "i feel", "why dont you", "why cant i", "are you",
                     "i cant", "i am", "im ", "you ", "i want", "what", "how", "who", "where", "when", "why", "name",
-                    "cause", "sorry", "dream", "hello", "hi ", "maybe", "no", "your", "always", "think", "alike",
+                    "cause", "sorry", "dream", "hello", "hi ", "maybe", "no ", "your", "always", "think", "alike",
                     "yes", "friend", "computer"]
 
         for counter, keyword in enumerate(keywords):
@@ -88,7 +93,7 @@ class Eliza:
         """
         FUnction that will conjugate sentence, making first person words second person words.
         :param sentence: String that will be conjugated.
-        :return: String with conjugated words (if any exst).
+        :return: String with conjugated words (if any exist).
         """
         conjugates = {
             'are': 'am',
@@ -206,7 +211,7 @@ class Eliza:
             29: [f"Can you think of a specific example?", "When?", f"What are you thinking of?",
                  f"Really, always?"],
             30: [f"Do you really think so?", f"But you are not sure you *",
-                 f"Do you doubt *"],
+                 f"Do you really believe *"],
             31: [f"In what way?", f"What resemblance do you see?",
                  f"What does the similarity suggest to you?",
                  f"What other connections do you see?",
@@ -380,6 +385,9 @@ class Eliza:
         print(f'Build Reply: {sentence}')
 
     def eliza(self):
+        """
+        Main function
+        """
         print("Hello, I am Eliza.  Tell me your problems.")
         while True:
             sentence = input(">")
