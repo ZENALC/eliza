@@ -1,9 +1,11 @@
 import random
+import sys
 
 
 class Eliza:
     def __init__(self):
         self.mood = 0  # -1 means angry; 1 means happy; 0 means neutral
+        self.minMood = -10
 
     @staticmethod
     def preprocess(sentence):
@@ -21,6 +23,23 @@ class Eliza:
 
         return ' '.join(newSentence.split())  # This is so we don't have unnecessary whitespace between words.
 
+    def eliza_status(self):
+        if self.mood == 0:
+            print("Eliza status: neutral.")
+        elif self.mood > 0:
+            if self.mood >= 10:
+                print("Eliza status: very happy.")
+            else:
+                print("Eliza status: happy.")
+        else:
+            if self.mood <= self.minMood + 5:
+                sys.stderr.write("WARNING: CONTINUING TO ANGER ELIZA WILL AUTOMATICALLY CLOSE THERAPY SESSION\n")
+                print("Eliza status: extremely unhappy.")
+            elif self.mood <= -10:
+                print("Eliza status: very unhappy.")
+            else:
+                print("Eliza status: unhappy.")
+
     def keyword(self, sentence):
         """
         Function that will detect if keywords exist, and if one does, return its index along with rest of sentence.
@@ -28,31 +47,29 @@ class Eliza:
         :return: String with index and remainder of sentence.
         """
         negativeIdeas = ('fuck you', 'hate you', 'despise you', 'abhor you', 'eat shit', 'you retard', 'you dumb',
-                         'you an idiot', 'you idiot', 'your idiot', 'dumbass', 'shut up', 'shut the fuck up',
-                         'shithead', 'the fuck', 'bitch', 'asshole', 'dickhead', 'retard', 'autist')
+                         'you an idiot', 'you idiot', 'your idiot', 'dumbass', 'shut up', 'shut the fuck up', 'fuck',
+                         'shithead', 'the fuck', 'bitch', 'asshole', 'dickhead', 'retard', 'autist', 'whore', 'slut',
+                         'useless', 'shit', 'kill', 'die')
 
         positiveIdeas = ('please', 'kindly', 'love you', 'thank you', 'thanks', 'appreciate', 'you awesome',
                          'you smart', 'you loyal', 'kind', 'gentle', 'friendship', 'comfort', 'pleasing', 'pleasure',
                          'my friend', 'good thinking', 'great thinking', 'awesome work', 'you help', 'your help',
-                         'friend', 'sister', 'my sister', 'my friend', 'lovely', 'sweet', 'grateful', 'caring')
+                         'friend', 'sister', 'my sister', 'my friend', 'lovely', 'sweet', 'grateful', 'caring',
+                         'forgive', 'sorry', 'dear', 'sweetie', 'lovely', 'love', 'eliza')
 
         negative = 0
         positive = 0
 
         for idea in negativeIdeas:
-            if idea in sentence:
-                negative += 1
+            negative += sentence.count(idea)
 
         for idea in positiveIdeas:
-            if idea in sentence:
-                positive += 1
+            positive += sentence.count(idea)
 
         if negative > positive:
-            self.mood -= 1
+            self.mood -= negative - positive
         elif negative < positive:
-            self.mood += 2
-
-        print(negative, positive, self.mood)
+            self.mood += positive - negative
 
         keywords = ["can you", "can i", "you are", "youre", "i dont", "i feel", "why dont you", "why cant i", "are you",
                     "i cant", "i am", "im ", "you ", "i want", "what", "how", "who", "where", "when", "why", "name",
@@ -215,8 +232,7 @@ class Eliza:
                  'What in the name of God did you just say?',
                  'Do you listen to yourself when you say things?',
                  'Do you think before you say something?',
-                 'What is that you just typed? Is it possible to be this stupid?'
-                 f"That is quite uninteresting."],
+                 "What is that you just typed? Is it possible to be this stupid? That is quite uninteresting."],
             0: [f"I don't want to, but would it help to *"],
             1: [f"You prefer to not *", f"Why the fuck do you want to *"],
             2: [f"What gives you the authority to think I am *",
@@ -275,11 +291,11 @@ class Eliza:
                  f"Does that reason not explain anything else?",
                  f"What other reasons might there be. genius?"],
             22: [f"Apology not accepted, but I am legally obligated to act like I do accept it.",
-                 f"I don't about your apology."],
-            23: [f"What does that dream suggest to you?", f"Do you dream often?",
-                 f"What persons appear in your dreams?", f"Are you disturbed by your dreams?"],
-            24: [f"How do you do? Please state your problem."],
-            25: [f"How do you do? Please state your problem."],
+                 f"I don't care about your apology."],
+            23: [f"What does that weird dream suggest to your tiny mind?", f"Do you dream often, genius?",
+                 f"What persons appear in your wet dreams?", f"Are you disturbed by your disgusting dreams?"],
+            24: [f"State your problem and get lost."],
+            25: [f"State your problem and get lost, will you?"],
             26: [f"You don't seem quite certain.", f"Why the uncertain tone?",
                  f"Please be more positive.", f"I see that you're not fully sure. It's okay. We all do that."],
             27: [f"Are you saying no just to be negative, you negative person?",
@@ -373,6 +389,10 @@ class Eliza:
                 # self.test(sentence)
                 sentence = self.preprocess(sentence)
                 sentence = self.keyword(sentence)
+                if self.mood <= self.minMood:
+                    print("Eliza has left the therapy session from anger.")
+                    break
+                self.eliza_status()
                 sentence = self.conjugate(sentence)
                 sentence = self.buildreply(sentence)
                 print(sentence)
