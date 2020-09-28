@@ -59,7 +59,7 @@ class Eliza:
         positiveIdeas = ('please', 'kindly', 'love you', 'thank you', 'thanks', 'appreciate', 'you awesome',
                          'you smart', 'you loyal', 'kind', 'gentle', 'friendship', 'comfort', 'pleasing', 'pleasure',
                          'my friend', 'good thinking', 'great thinking', 'awesome work', 'you help', 'your help',
-                         'friend', 'sister', 'my sister', 'my friend', 'lovely', 'sweet', 'grateful', 'caring',
+                         'friend', 'sister', 'my sister', 'lovely', 'sweet', 'grateful', 'caring',
                          'forgive', 'sorry', 'dear', 'sweetie', 'lovely', 'love', 'eliza')
 
         negative = 0
