@@ -7,6 +7,11 @@ class Eliza:
 
     @staticmethod
     def preprocess(sentence):
+        """
+        Preprocesses sentence by removing everything but space and the alphabet.
+        :param sentence: String we will preprocess.
+        :return: Preprocessed string.
+        """
         #  This list has letters from a up to z and a space.
         allowedCharacters = [chr(character) for character in range(ord('a'), ord('z') + 1)] + [' ']
         newSentence = ''  # Sew sentence we will append to.
@@ -14,25 +19,34 @@ class Eliza:
             if letter in allowedCharacters:
                 newSentence += letter
 
-        return ' '.join(newSentence.split())  # This is so we don't have unnecessary whitespace.
+        return ' '.join(newSentence.split())  # This is so we don't have unnecessary whitespace between words.
 
     @staticmethod
     def keyword(sentence):
+        """
+        Function that will detect if keywords exist, and if one does, return its index along with rest of sentence.
+        :param sentence: String that will be checked for keywords.
+        :return: String with index and remainder of sentence.
+        """
         keywords = ["can you", "can i", "you are", "youre", "i dont", "i feel", "why dont you", "why cant i", "are you",
                     "i cant", "i am", "im ", "you ", "i want", "what", "how", "who", "where", "when", "why", "name",
                     "cause", "sorry", "dream", "hello", "hi ", "maybe", "no", "your", "always", "think", "alike",
                     "yes", "friend", "computer"]
 
         for counter, keyword in enumerate(keywords):
-            tempWord = f'{keyword} '
-            index = sentence.find(tempWord)
+            index = sentence.find(keyword)
             if index != -1:
-                return f'{counter}{sentence[index + len(keyword):]}'
+                return f'{counter} {sentence[index + len(keyword):].lstrip()}'
 
         return '-1'
 
     @staticmethod
     def conjugate(sentence):
+        """
+        FUnction that will conjugate sentence, making first person words second person words.
+        :param sentence: String that will be conjugated.
+        :return: String with conjugated words (if any exst).
+        """
         conjugates = {
             'are': 'am',
             'am': 'are',
@@ -50,15 +64,12 @@ class Eliza:
         }
 
         sentenceWords = sentence.split()
-        newSentenceList = []
 
-        for word in sentenceWords:
+        for counter, word in enumerate(sentenceWords):
             if word in conjugates.keys():
-                newSentenceList.append(conjugates[word])
-            else:
-                newSentenceList.append(word)
+                sentenceWords[counter] = conjugates[word]
 
-        return ' '.join(newSentenceList)
+        return ' '.join(sentenceWords)
 
     @staticmethod
     def getreply(number):
@@ -141,14 +152,28 @@ class Eliza:
 
         return random.choice(replies[number])
 
-    def buildreply(self, sentence):
-        try:
-            number = int(sentence[:2])
-            index = 2
-        except ValueError:
-            number = int(sentence[0])
-            index = 1
+    @staticmethod
+    def getnumber(sentence):
+        """
+        Strips initial number from sentence.
+        :param sentence: Sentence we will get initial number from.
+        :return: Number from initial part of sentence
+        """
+        number = ''
+        for letter in sentence:
+            if letter.isdigit() or letter == '-':
+                number += letter
+            else:
+                break
 
+        if len(number) == 0 or number[-1] == '-':
+            raise ValueError('Unexpected index.')
+        else:
+            return int(number)
+
+    def buildreply(self, sentence):
+        number = self.getnumber(sentence)
+        index = len(str(number)) + 1
         reply = self.getreply(number)
         sentence = sentence[index:].strip()
 
@@ -165,7 +190,7 @@ class Eliza:
         sentence = self.conjugate(sentence)
         print(f'Conjugate: {sentence}')
         sentence = self.buildreply(sentence)
-        print(sentence)
+        print(f'Build Reply: {sentence}')
 
     def eliza(self):
         print("Hello, I am Eliza.  Tell me your problems.")
